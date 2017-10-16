@@ -25,6 +25,25 @@
 
       var chartDiv = document.getElementById("chart");
       var svg = d3.select(chartDiv).append("svg");
+      const xValue = d => +d.Rating;
+      const xLabel = 'Rating';
+      const yValue = d => +d.Votes;
+      const zValue=d=>+d.Runtime;
+      const yLabel = 'Votes';
+      const colorValue = d => d.Year;
+      const colorLabel = 'Year';
+      const margin = { left: 160, right: 200, top: 60, bottom: 80 };
+       const g = svg.append('g')
+          .attr('transform', `translate(${margin.left},${margin.top})`);
+      const xAxisG = g.append('g');
+      const yAxisG = g.append('g');
+      const colorLegendG = g.append('g');
+      const xScale = d3.scaleLinear();
+      const yScale = d3.scaleLinear();
+      const colorScale = d3.scaleOrdinal()
+        .range(d3.schemeCategory10);
+      
+
 
       function redraw(){
 
@@ -38,30 +57,20 @@
           .attr("height", height);
 
         // Draw an X to show that the size is correct.
-        const xValue = d => d.Rating;
-      const xLabel = 'Rating';
-      const yValue = d => d.Votes;
-      const zValue=d=>d.Runtime;
-      const yLabel = 'Votes';
-      const colorValue = d => d.Year;
-      const colorLabel = 'Year';
-      const margin = { left: 160, right: 200, top: 60, bottom: 80 };
-
+        
       
       const innerWidth = width - margin.left - margin.right;
       const innerHeight = height - margin.top - margin.bottom;
 
-      const g = svg.append('g')
-          .attr('transform', `translate(${margin.left},${margin.top})`);
-      const xAxisG = g.append('g')
+     
+      
+      xAxisG
           .attr('transform', `translate(0, ${innerHeight})`);
-      const yAxisG = g.append('g');
-      const colorLegendG = g.append('g')
+      
+      
+      colorLegendG
           .attr('transform', `translate(${innerWidth + 60}, 150)`);
-      const a=d3.rgb(255,0,0);
-      const b=d3.rgb(0,255,0);
-      const compute=d3.interpolate(a,b);
-      //const linear=d3.scale.linear().domain([2006,2016]).range([0,1]);
+      
 
       xAxisG.append('text')
           .attr('class', 'axis-label')
@@ -83,10 +92,6 @@
           .attr('y', -40)
           .text(colorLabel);
 
-      const xScale = d3.scaleLinear();
-      const yScale = d3.scaleLinear();
-      const colorScale = d3.scaleOrdinal()
-        .range(d3.schemeCategory10);
       
       const xAxis = d3.axisBottom()
         .scale(xScale)
@@ -101,17 +106,11 @@
 
       const colorLegend = d3.legendColor()
         .scale(colorScale)
-        .shape('circle');
+        .shape('square');
 
-      const row = d => {
-        d.Rating = +d.Rating;
-        d.Runtime = +d.Runtime;
-        d.Votes = +d.Votes;
-        //d.sepalWidth = +d.sepalWidth;
-        return d;
-      };
+    
 
-      d3.csv('data.csv', row, data => {
+      d3.csv('data.csv', data => {
         xScale
           .domain(d3.extent(data, xValue))
           .range([0, innerWidth])
@@ -121,12 +120,17 @@
           .domain(d3.extent(data, yValue))
           .range([innerHeight, 0])
           .nice();
+        var circles = d3.select('g').selectAll('circle').data(data)
+            
+        circles.exit().remove();
+            
 
-        g.selectAll('circle').data(data)
-          .enter().append('circle')
-            .attr('cx', d => xScale(xValue(d)))
-            .attr('cy', d => yScale(yValue(d)))
-            .attr('fill', d => colorScale(colorValue(d)))
+        circles
+              .enter().append('circle')
+            		.attr('fill', d => colorScale(colorValue(d)))
+            		.merge(circles)
+                .attr('cx', d => xScale(xValue(d)))
+                .attr('cy', d => yScale(yValue(d)))
             .attr('fill-opacity', 0.5)
             .attr('r', d => zValue(d)/15);
         		//.attr('fill',function(d){return compute(linear(colorValue(d)))});
