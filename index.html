@@ -76,25 +76,25 @@
       
       
       colorLegendG
-          .attr('transform', `translate(${innerWidth + 60}, 150)`);
+          .attr('transform', `translate(${innerWidth + 60}, 32)`);
       
 
       x_label
           .attr('class', 'axis-label')
           .attr('x', innerWidth / 2)
-          .attr('y', 52)
+          .attr('y', innerHeight+40)
           .text(xLabel);
 
      y_label
           .attr('class', 'axis-label')
           .attr('x', -innerHeight / 2)
-          .attr('y', -98)
+          .attr('y', -innerWidth/8)
           .attr('transform', `rotate(-90)`)
           .style('text-anchor', 'middle')
           .text(yLabel);
 
       color_legend
-              .attr('x', -30)
+              .attr('x', 3)
               .attr('y', -20)
               .text(colorLabel);
 
@@ -139,13 +139,13 @@
                 .attr('cy', d => yScale(yValue(d)))
             .attr('fill-opacity', 0.5)
             .attr('r', d => zValue(d)/15);
-        		//.attr('fill',function(d){return compute(linear(colorValue(d)))});
+        	
 
         xAxisG.call(xAxis);
         yAxisG.call(yAxis);
         colorLegendG.call(colorLegend)
-          .selectAll('.cell text')
-            .attr('dy', '0.1em');
+          .selectAll('.cell text');
+            
       })};
 
       // Draw for the first time to initialize.
