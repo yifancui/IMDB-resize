@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <title>Dynamic Size Example</title>
     <script src="https://d3js.org/d3.v4.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-legend/2.24.0/d3-legend.min.js"></script>
     <style>
 
       /* Make the chart container fill the page using CSS. */
@@ -37,22 +38,105 @@
           .attr("height", height);
 
         // Draw an X to show that the size is correct.
-        var lines = svg.selectAll("line").data([
-          {x1: 0, y1: 0, x2: width, y2: height},
-          {x1: 0, y1: height, x2: width, y2: 0}
-        ]);
-        lines
-          .enter().append("line")
-            .style("stroke-width", 50)
-            .style("stroke-opacity", 0.4)
-            .style("stroke", "black")
-          .merge(lines)
-            .attr("x1", function (d) { return d.x1; })
-            .attr("y1", function (d) { return d.y1; })
-            .attr("x2", function (d) { return d.x2; })
-            .attr("y2", function (d) { return d.y2; })
-         ;
-      }
+        const xValue = d => d.Rating;
+      const xLabel = 'Rating';
+      const yValue = d => d.Votes;
+      const zValue=d=>d.Runtime;
+      const yLabel = 'Votes';
+      const colorValue = d => d.Year;
+      const colorLabel = 'Year';
+      const margin = { left: 160, right: 200, top: 60, bottom: 80 };
+
+      
+      const innerWidth = width - margin.left - margin.right;
+      const innerHeight = height - margin.top - margin.bottom;
+
+      const g = svg.append('g')
+          .attr('transform', `translate(${margin.left},${margin.top})`);
+      const xAxisG = g.append('g')
+          .attr('transform', `translate(0, ${innerHeight})`);
+      const yAxisG = g.append('g');
+      const colorLegendG = g.append('g')
+          .attr('transform', `translate(${innerWidth + 60}, 150)`);
+      const a=d3.rgb(255,0,0);
+      const b=d3.rgb(0,255,0);
+      const compute=d3.interpolate(a,b);
+      //const linear=d3.scale.linear().domain([2006,2016]).range([0,1]);
+
+      xAxisG.append('text')
+          .attr('class', 'axis-label')
+          .attr('x', innerWidth / 2)
+          .attr('y', 52)
+          .text(xLabel);
+
+      yAxisG.append('text')
+          .attr('class', 'axis-label')
+          .attr('x', -innerHeight / 2)
+          .attr('y', -98)
+          .attr('transform', `rotate(-90)`)
+          .style('text-anchor', 'middle')
+          .text(yLabel);
+
+      colorLegendG.append('text')
+          .attr('class', 'legend-label')
+          .attr('x', -30)
+          .attr('y', -40)
+          .text(colorLabel);
+
+      const xScale = d3.scaleLinear();
+      const yScale = d3.scaleLinear();
+      const colorScale = d3.scaleOrdinal()
+        .range(d3.schemeCategory10);
+      
+      const xAxis = d3.axisBottom()
+        .scale(xScale)
+        .tickPadding(15)
+        .tickSize(-innerHeight);
+
+      const yAxis = d3.axisLeft()
+        .scale(yScale)
+        .ticks(15)
+        .tickPadding(15)
+        .tickSize(-innerWidth);
+
+      const colorLegend = d3.legendColor()
+        .scale(colorScale)
+        .shape('circle');
+
+      const row = d => {
+        d.Rating = +d.Rating;
+        d.Runtime = +d.Runtime;
+        d.Votes = +d.Votes;
+        //d.sepalWidth = +d.sepalWidth;
+        return d;
+      };
+
+      d3.csv('data.csv', row, data => {
+        xScale
+          .domain(d3.extent(data, xValue))
+          .range([0, innerWidth])
+          .nice();
+
+        yScale
+          .domain(d3.extent(data, yValue))
+          .range([innerHeight, 0])
+          .nice();
+
+        g.selectAll('circle').data(data)
+          .enter().append('circle')
+            .attr('cx', d => xScale(xValue(d)))
+            .attr('cy', d => yScale(yValue(d)))
+            .attr('fill', d => colorScale(colorValue(d)))
+            .attr('fill-opacity', 0.5)
+            .attr('r', d => zValue(d)/15);
+        		//.attr('fill',function(d){return compute(linear(colorValue(d)))});
+
+        xAxisG.call(xAxis);
+        yAxisG.call(yAxis);
+        colorLegendG.call(colorLegend)
+          .selectAll('.cell text')
+            .attr('dy', '0.1em');
+      })};
 
       // Draw for the first time to initialize.
       redraw();
