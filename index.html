@@ -43,7 +43,14 @@
       const colorScale = d3.scaleOrdinal()
         .range(d3.schemeCategory10);
       
-
+			var x_label = g.append('text')
+      						 .attr('class', 'axis-label');
+      var y_label = g.append('text')
+      						 .attr('class', 'axis-label');
+      
+      var color_legend = colorLegendG.append('text')
+              											 .attr('class', 'legend-label')
+      
 
       function redraw(){
 
@@ -72,13 +79,13 @@
           .attr('transform', `translate(${innerWidth + 60}, 150)`);
       
 
-      xAxisG.append('text')
+      x_label
           .attr('class', 'axis-label')
           .attr('x', innerWidth / 2)
           .attr('y', 52)
           .text(xLabel);
 
-      yAxisG.append('text')
+     y_label
           .attr('class', 'axis-label')
           .attr('x', -innerHeight / 2)
           .attr('y', -98)
@@ -86,11 +93,10 @@
           .style('text-anchor', 'middle')
           .text(yLabel);
 
-      colorLegendG.append('text')
-          .attr('class', 'legend-label')
-          .attr('x', -30)
-          .attr('y', -40)
-          .text(colorLabel);
+      color_legend
+              .attr('x', -30)
+              .attr('y', -20)
+              .text(colorLabel);
 
       
       const xAxis = d3.axisBottom()
