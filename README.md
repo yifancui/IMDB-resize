@@ -5,5 +5,6 @@ Inspired by [Stylized Scatter Plot with Color Legend](http://bl.ocks.org/curran/
 forked from <a href='http://bl.ocks.org/curran/'>curran</a>'s block: <a href='http://bl.ocks.org/curran/ecb09f2605c7fbbadf0eeb75da5f0a6b'>Stylized Scatter Plot with Color Legend</a>
 
 To experience the resize behavior, [run this example full-screen](http://bl.ocks.org/curran/raw/3a68b0c81991e2e94b19/) and resize the browser.
+Github page is https://yifancui.github.io/IMDB-resize/
 
 forked from <a href='http://bl.ocks.org/curran/'>curran</a>'s block: <a href='http://bl.ocks.org/curran/3a68b0c81991e2e94b19'>Responding to Resize</a>
